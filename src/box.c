@@ -126,18 +126,23 @@ float overlap(float x1, float w1, float x2, float w2)
     float l1 = x1 - w1/2;
     float l2 = x2 - w2/2;
     float left = l1 > l2 ? l1 : l2;
+    printf("  left: %f\n", left);
     float r1 = x1 + w1/2;
     float r2 = x2 + w2/2;
     float right = r1 < r2 ? r1 : r2;
+    printf("  right: %f\n", right);
     return right - left;
 }
 
 float box_intersection(box a, box b)
 {
     float w = overlap(a.x, a.w, b.x, b.w);
+    printf("  w: %f\n", w);
     float h = overlap(a.y, a.h, b.y, b.h);
+    printf("  h: %f\n", h);
     if(w < 0 || h < 0) return 0;
     float area = w*h;
+    printf("  area: %f\n", area);
     return area;
 }
 

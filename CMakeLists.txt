@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.16)
 include(CMakeDependentOption)
 
 set(Darknet_MAJOR_VERSION 0)
@@ -24,8 +24,8 @@ option(ENABLE_VCPKG_INTEGRATION "Enable VCPKG integration" ON)
 option(ENABLE_DEPLOY_CUSTOM_CMAKE_MODULES "Copy custom CMake modules for downstream integration" OFF)
 option(ENABLE_CSHARP_WRAPPER "Enable building a csharp wrapper" OFF)
 option(VCPKG_BUILD_OPENCV_WITH_CUDA "Build OpenCV with CUDA extension integration" ON)
-option(VCPKG_USE_OPENCV2 "Use legacy OpenCV 2" OFF)
-option(VCPKG_USE_OPENCV3 "Use legacy OpenCV 3" OFF)
+option(VCPKG_USE_OPENCV2 "Use legacy OpenCV 2" ON)
+option(VCPKG_USE_OPENCV3 "Use legacy OpenCV 3" ON)
 option(VCPKG_USE_OPENCV4 "Use OpenCV 4" ON)
 
 if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET})

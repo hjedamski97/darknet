@@ -298,7 +298,8 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
         const int iteration = get_current_iteration(net);
         //i = get_current_batch(net);
 
-        int calc_map_for_each = 4 * train_images_num / (net.batch * net.subdivisions);  // calculate mAP for each 4 Epochs
+        //int calc_map_for_each = 4 * train_images_num / (net.batch * net.subdivisions);  // calculate mAP for each 4 Epochs
+        int calc_map_for_each = 1 * train_images_num / (net.batch * net.subdivisions);  // calculate mAP for each 4 Epochs
         calc_map_for_each = fmax(calc_map_for_each, 100);
         int next_map_calc = iter_map + calc_map_for_each;
         next_map_calc = fmax(next_map_calc, net.burn_in);
@@ -492,7 +493,7 @@ static void print_cocos(FILE *fp, char *image_path, detection *dets, int num_box
             if (dets[i].prob[j] > 0) {
                 char buff[1024];
                 sprintf(buff, "{\"image_id\":%d, \"category_id\":%d, \"bbox\":[%f, %f, %f, %f], \"score\":%f},\n", image_id, coco_ids[j], bx, by, bw, bh, dets[i].prob[j]);
-                fprintf(fp, "%s", buff);
+                fprintf(fp, buff);
                 //printf("%s", buff);
             }
         }
@@ -1127,9 +1128,10 @@ float validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, floa
                         for (j = 0; j < num_labels; ++j)
                         {
                             box t = { truth[j].x, truth[j].y, truth[j].w, truth[j].h };
-                            //printf(" IoU = %f, prob = %f, class_id = %d, truth[j].id = %d \n",
-                            //    box_iou(dets[i].bbox, t), prob, class_id, truth[j].id);
+                            printf(" IoU = %f, prob = %f, class_id = %d, truth[j].id = %d \n",
+                                box_iou(dets[i].bbox, t), prob, class_id, truth[j].id);
                             float current_iou = box_iou(dets[i].bbox, t);
+                            printf(" current_iou = %f \n", current_iou);
                             if (current_iou > iou_thresh && class_id == truth[j].id) {
                                 if (current_iou > max_iou) {
                                     max_iou = current_iou;
