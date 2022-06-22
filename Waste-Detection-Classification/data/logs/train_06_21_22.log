@@ -1,0 +1,4 @@
+ CUDA-version: 11070 (11070), cuDNN: 8.4.0, CUDNN_HALF=1, GPU count: 1  
+ DEBUG=1 
+ CUDNN_HALF=1 
+ OpenCV version: 4.2.0d
