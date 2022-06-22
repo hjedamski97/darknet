@@ -11,7 +11,7 @@
 *.dylib
 *.pyc
 mnist/
-data/
+#data/
 caffe/
 grasp/
 images/
@@ -64,3 +64,9 @@ uselib
 uselib_track
 darknet
 vcpkg/
+
+# additional files which shall not be tracked managed by HJJedamski
+*.jpg
+*.jpeg
+*.png
+*.txt
