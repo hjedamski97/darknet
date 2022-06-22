@@ -1,0 +1,146 @@
+import os
+import cv2
+from os.path import join
+from os.path import exists
+from pathlib import Path
+from PIL import Image
+import re
+import shutil
+import statistics
+
+
+def sort_list(num_list):
+    res = sorted(num_list, key=lambda k: k['index'].get('num', 0), reverse=True)
+    print("Sortierte Liste: ", res)
+    return res
+
+def images_elektronik(dest):
+    k = 0
+    elektronik_img = 0
+    for file in os.listdir(dest):
+        fn, fext = os.path.splitext(file)
+        if (fext==".txt"):
+            with open(os.path.join(src, file), 'r') as file:
+                #print("File: ", file)
+                for row in file:
+                    print("row: ", row)
+                    print("")
+                    #Background-Klasse -> leere Datei
+                    if (row != "") and (row[k] != '\n'):
+                        cat, x, y, w, h = row.split(" ")
+                        if cat == "0":
+                            elektronik_img  = elektronik_img + 1
+                            break
+                    else:
+                        print("Background-Class")
+                        break
+    return elektronik_img
+
+def images_glas(dest):
+    k = 0
+    glas_img = 0
+    for file in os.listdir(dest):
+        fn, fext = os.path.splitext(file)
+        if (fext==".txt"):
+            with open(os.path.join(src, file), 'r') as file:
+                #print("File: ", file)
+                for row in file:
+                    print("row: ", row)
+                    print("")
+                    #Background-Klasse -> leere Datei
+                    if (row != "") and (row[k] != '\n'):
+                        cat, x, y, w, h = row.split(" ")
+                        if cat == "1":
+                            glas_img  = glas_img + 1
+                            break
+                    else:
+                        print("Background-Class")
+                        break
+    return glas_img
+
+def images_holz(dest):
+    k = 0
+    holz_img = 0
+    for file in os.listdir(dest):
+        fn, fext = os.path.splitext(file)
+        if (fext==".txt"):
+            with open(os.path.join(src, file), 'r') as file:
+                #print("File: ", file)
+                for row in file:
+                    print("row: ", row)
+                    print("")
+                    #Background-Klasse -> leere Datei
+                    if (row != "") and (row[k] != '\n'):
+                        cat, x, y, w, h = row.split(" ")
+                        if cat == "2":
+                            holz_img  = holz_img + 1
+                            break
+                    else:
+                        print("Background-Class")
+                        break
+    return holz_img
+
+def images_moebel(dest):
+    k = 0
+    moebel_img = 0
+    for file in os.listdir(dest):
+        fn, fext = os.path.splitext(file)
+        if (fext==".txt"):
+            with open(os.path.join(src, file), 'r') as file:
+                #print("File: ", file)
+                for row in file:
+                    print("row: ", row)
+                    print("")
+                    #Background-Klasse -> leere Datei
+                    if (row != "") and (row[k] != '\n'):
+                        cat, x, y, w, h = row.split(" ")
+                        if cat == "3":
+                            moebel_img  = moebel_img + 1
+                            break
+                    else:
+                        print("Background-Class")
+                        break
+    return moebel_img
+
+def images_pappe(dest):
+    k = 0
+    pappe_img = 0
+    for file in os.listdir(dest):
+        fn, fext = os.path.splitext(file)
+        if (fext==".txt"):
+            with open(os.path.join(src, file), 'r') as file:
+                #print("File: ", file)
+                for row in file:
+                    print("row: ", row)
+                    print("")
+                    #Background-Klasse -> leere Datei
+                    if (row != "") and (row[k] != '\n'):
+                        cat, x, y, w, h = row.split(" ")
+                        if cat == "4":
+                            pappe_img  = pappe_img + 1
+                            break
+                    else:
+                        print("Background-Class")
+                        break
+    return pappe_img
+
+def images_plastik(dest):
+    k = 0
+    elektronik_img = 0
+    for file in os.listdir(dest):
+        fn, fext = os.path.splitext(file)
+        if (fext==".txt"):
+            with open(os.path.join(src, file), 'r') as file:
+                #print("File: ", file)
+                for row in file:
+                    print("row: ", row)
+                    print("")
+                    #Background-Klasse -> leere Datei
+                    if (row != "") and (row[k] != '\n'):
+                        cat, x, y, w, h = row.split(" ")
+                        if cat == "0":
+                            elektronik_img  = elektronik_img + 1
+                            break
+                    else:
+                        print("Background-Class")
+                        break
