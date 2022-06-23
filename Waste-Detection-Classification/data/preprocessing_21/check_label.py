@@ -1,6 +1,7 @@
 import os
 import cv2
 import os.path
+from glob import glob
 from os.path import join
 from os.path import exists
 from pathlib import Path
@@ -8,16 +9,162 @@ from PIL import Image
 import re
 import shutil
 import statistics
+from sklearn.model_selection import train_test_split
 
-def readNames(path):
+def split_dataset(cat_dir, train_dir, test_dir):
+    src = cat_dir
+    name_list = []
+    folder_count = 0
+
+    for folder in os.listdir(src):
+         name_list = []
+         test_names = []
+         train_names = []
+         print(str(folder))
+         print("Splitting all .jpeg's")
+         print("----------------------")
+         path = src + str(folder) + "/"
+         print("PFAD: ", path)
+         try:
+             for file in os.listdir(path):
+                 print(file)
+                 print("")
+                 fn, fext = os.path.splitext(file)
+                 if (fext == ".jpeg"):
+                      name_list.append(fn)
+
+             if len(name_list) > 0 and len(name_list) >= 10:
+                 test_names, train_names = train_test_split(name_list, test_size=0.8)
+                 print("train-names: ", len(train_names))
+                 print("------------------------------------------------")
+                 print("test-names: ", len(test_names))
+
+                 for file in train_names:
+                     image = file + '.jpeg'
+                     #print("i: ",image)
+                     txt = file+'.txt'
+                     #print(os.path.join(destination_path, image))
+                     #print(os.path.cwd)
+                     shutil.copy(path + image,
+                                 train_dir + image)
+                     shutil.copy(path + txt,
+                                 train_dir + txt)
+
+                 for file in test_names:
+                     image = file+'.jpeg'
+                     txt = file+'.txt'
+                     #print(os.path.join(destination_path, image))
+                     shutil.copy(path + image,
+                                 test_dir + image)
+                     shutil.copy(path + txt,
+                                 test_dir + txt)
+
+             elif len(name_list) > 0 and len(name_list) < 10:
+                 test_names, train_names = train_test_split(name_list, test_size=0.5)
+                 print("train-names: ", len(train_names))
+                 print("------------------------------------------------")
+                 print("test-names: ", len(test_names))
+
+                 for file in train_names:
+                     image = file + '.jpeg'
+                     #print("i: ",image)
+                     txt = file+'.txt'
+                     #print(os.path.join(destination_path, image))
+                     #print(os.path.cwd)
+                     shutil.copy(path + image,
+                                 train_dir + image)
+                     shutil.copy(path + txt,
+                                 train_dir + txt)
+
+                 for file in test_names:
+                     image = file+'.jpeg'
+                     txt = file+'.txt'
+                     #print(os.path.join(destination_path, image))
+                     shutil.copy(path + image,
+                                 test_dir + image)
+                     shutil.copy(path + txt,
+                                 test_dir + txt)
+             else:
+                 print("Name-List is empty!")
+
+             print("Now all .jpg's ..")
+             print("----------------------")
+             name_list = []
+
+             for file in os.listdir(src):
+                 print(file)
+                 print("")
+                 fn, fext = os.path.splitext(file)
+                 if (fext == ".jpg"):
+                     name_list.append(fn)
+
+             if len(name_list) > 0 and len(name_list) >= 10:
+                 test_names, train_names = train_test_split(name_list, test_size=0.8)
+                 print("train-names: ", len(train_names))
+                 print("------------------------------------------------")
+                 print("test-names: ", len(test_names))
+
+                 for file in train_names:
+                     image = file + '.jpg'
+                     #print("i: ",image)
+                     txt = file+'.txt'
+                     #print(os.path.join(destination_path, image))
+                     #print(os.path.cwd)
+                     shutil.copy(path + image,
+                                 train_dir + image)
+                     shutil.copy(path + txt,
+                                 train_dir + txt)
+
+                 for file in test_names:
+                     image = file+'.jpg'
+                     txt = file+'.txt'
+                     #print(os.path.join(destination_path, image))
+                     shutil.copy(path + image,
+                                 test_dir + image)
+                     shutil.copy(path + txt,
+                                 test_dir + txt)
+             elif len(name_list) > 0 and len(name_list) < 10:
+                 test_names, train_names = train_test_split(name_list, test_size=0.5)
+
+                 print("train-names: ", len(train_names))
+                 print("------------------------------------------------")
+                 print("test-names: ", len(test_names))
+
+                 for file in train_names:
+                     image = file + '.jpg'
+                     #print("i: ",image)
+                     txt = file+'.txt'
+                     #print(os.path.join(destination_path, image))
+                     #print(os.path.cwd)
+                     shutil.copy(path + image,
+                                 train_dir + image)
+                     shutil.copy(path + txt,
+                                 train_dir + txt)
+
+                 for file in test_names:
+                     image = file+'.jpg'
+                     txt = file+'.txt'
+                     #print(os.path.join(destination_path, image))
+                     shutil.copy(path + image,
+                                 test_dir + image)
+                     shutil.copy(path + txt,
+                                 test_dir + txt)
+             else:
+                 print("Name-List is empty!")
+
+         except FileNotFoundError as e:
+             print("Alle Dateien durchsucht.")
+
+def init(path):
     k = 0
     res_list = []
     counter = 0
-    with open(path, 'r') as file:
+    #with open(os.path.join(src, file), 'r') as file:
+    with open(os.path.join(path, "names.txt"), 'r') as file:
         #print("File: ", file)
         for row in file:
-            print("row: ", row)
-            print("")
+            #print("row: ", row)
+            #print("")
             #Background-Klasse -> leere Datei
             if (row != "") and (row[k] != '\n'):
                 name = row.split(" ")
@@ -25,35 +172,8 @@ def readNames(path):
             counter = counter + 1
     return res_list
 
-def countImages(dest, cat_list):
-    print("ToDO")
-    k = 0
-    num_list = []
-    elektronik_img = 0
-    for element in cat_list:
-       
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "0":
-                            elektronik_img  = elektronik_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return num_list
-
-
 # Ineffizient, aber automatisierbar
-def count_annotations(dest, name_list):
+def category_info(dest, name_list):
     k = 0
     res_list = name_list
     for elem in res_list:
@@ -68,8 +188,8 @@ def count_annotations(dest, name_list):
                 with open(os.path.join(src, file), 'r') as file:
                     #print("File: ", file)
                     for row in file:
-                        print("row: ", row)
-                        print("")
+                        #print("row: ", row)
+                        #print("")
                         #Background-Klasse -> leere Datei
                         if (row != "") and (row[k] != '\n'):
                             cat, x, y, w, h = row.split(" ")
@@ -87,210 +207,43 @@ def count_annotations(dest, name_list):
         elem['num_images'] = num_images
     return res_list
 
-def sort_list(num_list):
-    res = sorted(num_list, key=lambda k: k['num'], reverse=False)
+def sort_list(info_list):
+    res = sorted(info_list, key=lambda k: k['num_images'], reverse=False)
     #print("Sortierte Liste: ", res)
     return res
 
-def images_elektronik(dest):
-    k = 0
-    elektronik_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "0":
-                            elektronik_img  = elektronik_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return elektronik_img
-
-def images_glas(dest):
-    k = 0
-    glas_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "1":
-                            glas_img  = glas_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return glas_img
-
-def images_holz(dest):
-    k = 0
-    holz_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "2":
-                            holz_img  = holz_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return holz_img
-
-def images_moebel(dest):
-    k = 0
-    moebel_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "3":
-                            moebel_img  = moebel_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return moebel_img
-
-def images_pappe(dest):
-    k = 0
-    pappe_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "4":
-                            pappe_img  = pappe_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return pappe_img
-
-def images_plastik(dest):
-    k = 0
-    plastik_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "5":
-                            plastik_img  = plastik_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return plastik_img
-
-def images_sanitaer(dest):
-    k = 0
-    sanitaer_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "6":
-                            sanitaer_img  = sanitaer_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return sanitaer_img
-
-
-def images_sonderabfaelle(dest):
-    k = 0
-    sonderabfaelle_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "7":
-                            sonderabfaelle_img  = sonderabfaelle_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return sonderabfaelle_img
-
-
-def images_stoffe(dest):
-    k = 0
-    stoffe_img = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "8":
-                            stoffe_img  = stoffe_img + 1
-                            break
-                    else:
-                        print("Background-Class")
-                        break
-    return stoffe_img
+def fair_dataset(l):
+    sorted_list = l
+    for element in sorted_list:
+        temp_idx = str(element['idx'])
+        print("INDEX: ", temp_idx)
+        for file in os.listdir(dest):
+            fn, fext = os.path.splitext(file)
+            path_jpeg = Path(os.path.join(dest, fn + ".jpeg"))
+            path_jpg = Path(os.path.join(dest, fn + ".jpg"))
+            #print("img_path: ", img_path)
+            #print("----------------------------------")
+            if fext == ".txt":
+                path_txt = os.path.join(dest, fn + fext)
+                b_cat = check_category(file, temp_idx)
+                #print("b_cat: ", b_cat)
+                if b_cat == True:
+                    # Directory
+                    temp_dir = temp_idx
+                    # Path
+                    dest_path = os.path.join(cat_dir, temp_dir)
+                    try:
+                        os.makedirs(dest_path, exist_ok = True)
+                        shutil.move(path_txt, dest_path)
+                        if path_jpg.is_file():
+                            img_jpg = os.path.join(dest, fn + ".jpg")
+                            shutil.move(img_jpg, dest_path)
+                        if path_jpeg.is_file():
+                            img_jpeg = os.path.join(dest, fn + ".jpeg")
+                            shutil.move(img_jpeg, dest_path)
+                    except OSError as error:
+                        print("Error: ", error)
+        print("Next prio-level-category")
 
 def check_category(file, prio_idx):
     k = 0
@@ -300,8 +253,8 @@ def check_category(file, prio_idx):
         with open(os.path.join(src, file), 'r') as file:
             #print("File: ", file)
             for row in file:
-                print("row: ", row)
-                print("")
+                #print("row: ", row)
+                #print("")
                 #Background-Klasse -> leere Datei
                 if (row != "") and (row[k] != '\n'):
                     cat, x, y, w, h = row.split(" ")
@@ -324,14 +277,14 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
         with open(os.path.join(src, file), 'r') as file:
             #print("File: ", file)
             for row in file:
-                print("row: ", row)
-                print("")
+                #print("row: ", row)
+                #print("")
                 #Background-Klasse -> leere Datei
                 if (row != "") and (row[k] != '\n'):
                     cat, x, y, w, h = row.split(" ")
                     #h = h.rstrip("\n")
                     if (float(x) >= 0 and float(x) <= 1) and (float(y) >= 0 and float(y) <= 1) and (float(w) >= 0 and float(w) <= 1) and (float(h) >= 0 and float(h) <= 1):
-                        if cat == str(0) or cat == str(1) or cat == str(2) or cat == str(3) or cat == str(4) or cat == str(5) or cat == str(6) or cat == str(7) or cat == str(8):
+                        if (int(cat) >= 0) and (int(cat) <= (num_cat - 1)):
                             line = str(cat) + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
                             str_list.append(line)
                             print("str_list: ", str_list)
@@ -357,10 +310,20 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
             print("")
             return res_list
 
-def main(cat_dir, path_names, src, dest, alone, invalid, trash):
+def main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val):
     src = src
     print("src: ", src)
     print("names: ", path_names)
+    print("1.Read category..")
+    print("-------------------")
+    init_list = []
+    init_list = init(path_names)
+    print("idx/category: ", init_list)
+    num_cat = len(init_list)
+    print("Number of Categories: ", num_cat)
+
+    print("2.Check-Label..")
+    print("-------------------")
     for file in os.listdir(src):
         print(file)
         print("")
@@ -442,88 +405,47 @@ def main(cat_dir, path_names, src, dest, alone, invalid, trash):
             print("Invalid File-Extension.. Move to trash")
             shutil.move(img_path, trash)
 
+    print("Label-Check over.")
     print("Sorting images with each category into seperat folders..")
     print("")
-    print("1.read category..")
-    print("-------------------")
-    name_list = []
-    name_list = readNames(path_names)
-    print("idx/category: ", name_list)
-    num_images = []
-    b_cat = False
-    print("2.counting annotations..")
+
+    print("3.get category-information..")
     print("------------------- ")
-    num_annotations = []
-    num_annotations = count_annotations(dest, name_list)
+    info_list = []
+    info_list = category_info(dest, init_list)
 
-    print("3.Counting the number of images per class..")
-    num_elektronik = images_elektronik(dest)
-    num_glas = images_glas(dest)
-    num_holz = images_holz(dest)
-    num_moebel = images_moebel(dest)
-    num_pappe = images_pappe(dest)
-    num_plastik = images_plastik(dest)
-    num_sanitaer = images_sanitaer(dest)
-    num_sonderabfaelle = images_sonderabfaelle(dest)
-    num_stoffe = images_stoffe(dest)
-
-    num_images.append({"idx": "0", "num": num_elektronik})
-    num_images.append({"idx": "1", "num": num_glas})
-    num_images.append({"idx": "2", "num": num_holz})
-    num_images.append({"idx": "3", "num": num_moebel})
-    num_images.append({"idx": "4", "num": num_pappe})
-    num_images.append({"idx": "5", "num": num_plastik})
-    num_images.append({"idx": "6", "num": num_sanitaer})
-    num_images.append({"idx": "7", "num": num_sonderabfaelle})
-    num_images.append({"idx": "8", "num": num_stoffe})
-    print("Num Images: ", num_images)
-    sorted_list = sort_list(num_images)
+    print("4.Sort Prio-List..")
+    print("------------------- ")
+    sorted_list = sort_list(info_list)
     print("Sortierte Liste: ", sorted_list)
 
-    print("Building Dataset with similar distrubution.")
-    for element in sorted_list:
-        temp_idx = str(element['idx'])
-        print("INDEX: ", temp_idx)
-        for file in os.listdir(dest):
-            fn, fext = os.path.splitext(file)
-            path_jpeg = Path(os.path.join(dest, fn + ".jpeg"))
-            path_jpg = Path(os.path.join(dest, fn + ".jpg"))
-            #print("img_path: ", img_path)
-            print("----------------------------------")
-            if fext == ".txt":
-                path_txt = os.path.join(dest, fn + fext)
-                b_cat = check_category(file, temp_idx)
-                print("b_cat: ", b_cat)
-                if b_cat == True:
-                    # Directory
-                    temp_dir = temp_idx
-                    # Path
-                    dest_path = os.path.join(cat_dir, temp_dir)
-                    try:
-                        os.makedirs(dest_path, exist_ok = True)
-                        shutil.move(path_txt, dest_path)
-                        if path_jpg.is_file():
-                            img_jpg = os.path.join(dest, fn + ".jpg")
-                            shutil.move(img_jpg, dest_path)
-                        if path_jpeg.is_file():
-                            img_jpeg = os.path.join(dest, fn + ".jpeg")
-                            shutil.move(img_jpeg, dest_path)
-                    except OSError as error:
-                        print("Error: ", error)
-        print("Next prio-level-category")
+    print("5.Building Dataset with fair distribution..")
+    print("------------------- ")
+    fair_dataset(sorted_list)
 
-    print("Counting number of images in train & val folder..")
-    
-    print("Finished check_label & sorting into cat-folders!")
-    print("Now you have to split Traindata into Train & val..")
+    print("6.Counting number of images in train & val folder..")
+    print("------------------- ")
+    train_list = []
+    val_list = []
+    train_list = category_info(train, init_list)
+    val_list = category_info(val, init_list)
+    print("Image-Info-Train: ", train_list)
+    print("Image-Info-Validation: ", val_list)
+    #print("Finished check_label & sorting into cat-folders!")
+    print("7.Split Data into Train & val..")
+    print("------------------- ")
+    split_dataset(cat_dir, train, val)
+    print("Finished.")
 
 if __name__ == "__main__":
-    path_names = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/names.txt"
-    cat_dir = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/category-folder"
-    src = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/input"
-    dest = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/output"
-    alone = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/alone"
-    invalid = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/yolo_format_invalid"
-    trash = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/trash"
-    main(cat_dir, path_names, src, dest, alone, invalid, trash)
+    path_names = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21"
+    cat_dir = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/category-folder"
+    src = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/input"
+    dest = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/output"
+    alone = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/alone"
+    invalid = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/yolo_format_invalid"
+    trash = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/trash"
+    train = "/home/datafleet/darknet/Waste-Detection-Classification/data/train"
+    val = "/home/datafleet/darknet/Waste-Detection-Classification/data/val"
+    main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val)
 
