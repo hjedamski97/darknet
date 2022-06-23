@@ -9,6 +9,83 @@ import re
 import shutil
 import statistics
 
+def readNames(path):
+    k = 0
+    res_list = []
+    counter = 0
+    with open(path, 'r') as file:
+        #print("File: ", file)
+        for row in file:
+            print("row: ", row)
+            print("")
+            #Background-Klasse -> leere Datei
+            if (row != "") and (row[k] != '\n'):
+                name = row.split(" ")
+            res_list.append({"idx": str(counter), "cat": name, "num_labels": 0, "num_images": 0})
+            counter = counter + 1
+    return res_list
+
+def countImages(dest, cat_list):
+    print("ToDO")
+    k = 0
+    num_list = []
+    elektronik_img = 0
+    for element in cat_list:
+       
+    for file in os.listdir(dest):
+        fn, fext = os.path.splitext(file)
+        if (fext==".txt"):
+            with open(os.path.join(src, file), 'r') as file:
+                #print("File: ", file)
+                for row in file:
+                    print("row: ", row)
+                    print("")
+                    #Background-Klasse -> leere Datei
+                    if (row != "") and (row[k] != '\n'):
+                        cat, x, y, w, h = row.split(" ")
+                        if cat == "0":
+                            elektronik_img  = elektronik_img + 1
+                            break
+                    else:
+                        print("Background-Class")
+                        break
+    return num_list
+
+
+# Ineffizient, aber automatisierbar
+def count_annotations(dest, name_list):
+    k = 0
+    res_list = name_list
+    for elem in res_list:
+        b_add_image = False
+        idx = str(elem['idx'])
+        cat = str(elem['cat'])
+        num_labels = int(elem['num_labels'])
+        num_images = int(elem['num_images'])
+        for file in os.listdir(dest):
+            fn, fext = os.path.splitext(file)
+            if (fext==".txt"):
+                with open(os.path.join(src, file), 'r') as file:
+                    #print("File: ", file)
+                    for row in file:
+                        print("row: ", row)
+                        print("")
+                        #Background-Klasse -> leere Datei
+                        if (row != "") and (row[k] != '\n'):
+                            cat, x, y, w, h = row.split(" ")
+                            if cat == idx:
+                                num_labels = num_labels + 1
+                                b_add_image = True
+
+                if b_add_image == True:
+                    num_images = num_images + 1
+                file.close()
+                b_add_image = False
+        elem['idx'] = idx
+        elem['cat'] = cat
+        elem['num_labels'] = num_labels
+        elem['num_images'] = num_images
+    return res_list
 
 def sort_list(num_list):
     res = sorted(num_list, key=lambda k: k['num'], reverse=False)
@@ -215,53 +292,6 @@ def images_stoffe(dest):
                         break
     return stoffe_img
 
-
-def count_annotations(dest):
-    k = 0
-    c_elektronik = 0
-    c_glas = 0
-    c_holz = 0
-    c_moebel = 0
-    c_pappe = 0
-    c_plastik = 0
-    c_sanitaer = 0
-    c_sonderabfaelle = 0
-    c_stoffe = 0
-    c_background = 0
-    for file in os.listdir(dest):
-        fn, fext = os.path.splitext(file)
-        if (fext==".txt"):
-            with open(os.path.join(src, file), 'r') as file:
-                #print("File: ", file)
-                for row in file:
-                    print("row: ", row)
-                    print("")
-                    #Background-Klasse -> leere Datei
-                    if (row != "") and (row[k] != '\n'):
-                        cat, x, y, w, h = row.split(" ")
-                        if cat == "0":
-                            c_elektronik  = c_elektronik + 1
-                        if cat == "1":
-                            c_glas  = c_glas + 1
-                        if cat == "2":
-                            c_holz  = c_holz + 1
-                        if cat == "3":
-                            c_moebel  = c_moebel + 1
-                        if cat == "4":
-                            c_pappe  = c_pappe + 1
-                        if cat == "5":
-                            c_plastik  = c_plastik + 1
-                        if cat == "6":
-                            c_sanitaer  = c_sanitaer + 1
-                        if cat == "7":
-                            c_sonderabfaelle  = c_sonderabfaelle + 1
-                        if cat == "8":
-                            c_stoffe  = c_stoffe + 1
-                    else:
-                        print("Background-Class")
-                        c_background = c_background + 1
-    return c_elektronik, c_glas, c_holz, c_moebel, c_pappe, c_plastik, c_sanitaer, c_sonderabfaelle, c_stoffe, c_background
-
 def check_category(file, prio_idx):
     k = 0
     fn, fext = os.path.splitext(file)
@@ -279,7 +309,7 @@ def check_category(file, prio_idx):
                         b_res = True
     return b_res
 
-def readFile(f, src, txt_path_old, img_path_old, dest, invalid):
+def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
     print("txt_path_old: ", txt_path_old)
     print("img_path_old: ", img_path_old)
     print("dest: ", dest)
@@ -327,13 +357,10 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid):
             print("")
             return res_list
 
-def main(cat_dir, src, dest, alone, invalid, trash):
+def main(cat_dir, path_names, src, dest, alone, invalid, trash):
     src = src
-    #dest = dest
     print("src: ", src)
-    #print("dest: ", dest)
-    #convert_to_jpeg(src)
-    #print("Rename file & convert it to .jpeg ...")
+    print("names: ", path_names)
     for file in os.listdir(src):
         print(file)
         print("")
@@ -348,7 +375,7 @@ def main(cat_dir, src, dest, alone, invalid, trash):
                 print("We have a match !")
                 img_path_old = check_path_jpeg
                 img_path_dest = os.path.join(dest, fn + ".jpeg")
-                bbx_list = readFile(file, src, txt_path_old, img_path_old, txt_path_dest, invalid)
+                bbx_list = readFile(file, src, txt_path_old, img_path_old, txt_path_dest, invalid, num_cat)
                 if bbx_list == []:
                     print("Fehler")
                     print("Bbx-Liste: ", bbx_list)
@@ -357,7 +384,7 @@ def main(cat_dir, src, dest, alone, invalid, trash):
                 print("We have a match !")
                 img_path_old = check_path_jpg
                 img_path_dest = os.path.join(dest, fn + ".jpg")
-                bbx_list = readFile(file, src, txt_path_old, img_path_old, txt_path_dest, invalid)
+                bbx_list = readFile(file, src, txt_path_old, img_path_old, txt_path_dest, invalid, num_cat)
                 if bbx_list == []:
                     print("Fehler")
                     print("Bbx-Liste: ", bbx_list)
@@ -417,41 +444,19 @@ def main(cat_dir, src, dest, alone, invalid, trash):
 
     print("Sorting images with each category into seperat folders..")
     print("")
-    # Parent Directory path
-    num_annotations = []
+    print("1.read category..")
+    print("-------------------")
+    name_list = []
+    name_list = readNames(path_names)
+    print("idx/category: ", name_list)
     num_images = []
     b_cat = False
-    print("Counting annotations..")
-    c_elektronik, c_glas, c_holz, c_moebel, c_pappe, c_plastik, c_sanitaer, c_sonderabfaelle, c_stoffe, c_background = count_annotations(dest)
-    print("Elektronik: ", c_elektronik)
-    print("Glas: ", c_glas)
-    print("Holz: ", c_holz)
-    print("Moebel: ", c_moebel)
-    print("Pappe: ", c_pappe)
-    print("Plastik: ", c_plastik)
-    print("Sanitaer: ", c_sanitaer)
-    print("Sonderabfaelle: ", c_sonderabfaelle)
-    print("Stoffe: ", c_stoffe)
-    print("Background: ", c_background)
-    print("-----------------------------------")
+    print("2.counting annotations..")
+    print("------------------- ")
+    num_annotations = []
+    num_annotations = count_annotations(dest, name_list)
 
-
-
-    #lowest_prio = max(c_elektronik, c_glas, c_holz, c_moebel, c_pappe, c_plastik, c_sanitaer, c_sonderabfaelle, c_stoffe, c_background)
-    #sum_annotations = sum(c_elektronik, c_glas, c_holz, c_moebel, c_pappe, c_plastik, c_sanitaer, c_sonderabfaelle, c_stoffe, c_background)
-    #print("Total: ", sum_annotations)
-    #num_annotations.append({"0", c_elektronik})
-    #num_annotations.append({"1", c_glas})
-    #num_annotations.append({"2", c_holz})
-    #num_annotations.append({"3", c_moebel})
-    #num_annotations.append({"4", c_pappe})
-    #num_annotations.append({"5", c_plastik})
-    #num_annotations.append({"6", c_sanitaer})
-    #num_annotations.append({"7", c_sonderabfaelle})
-    #num_annotations.append({"8", c_stoffe})
-    #num_annotations.append({"9", c_background})
-
-    print("Counting the number of images per class..")
+    print("3.Counting the number of images per class..")
     num_elektronik = images_elektronik(dest)
     num_glas = images_glas(dest)
     num_holz = images_holz(dest)
@@ -506,15 +511,19 @@ def main(cat_dir, src, dest, alone, invalid, trash):
                     except OSError as error:
                         print("Error: ", error)
         print("Next prio-level-category")
+
+    print("Counting number of images in train & val folder..")
+    
     print("Finished check_label & sorting into cat-folders!")
     print("Now you have to split Traindata into Train & val..")
 
 if __name__ == "__main__":
+    path_names = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/names.txt"
     cat_dir = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/category-folder"
     src = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/input"
     dest = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/output"
     alone = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/alone"
     invalid = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/yolo_format_invalid"
     trash = "/home/datafleet/21/YOLO-Darknet/darknet/data/preprocessing_21/trash"
-    main(cat_dir, src, dest, alone, invalid, trash)
+    main(cat_dir, path_names, src, dest, alone, invalid, trash)
 
