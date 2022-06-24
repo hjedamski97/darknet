@@ -344,7 +344,20 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
             print("")
             return res_list
 
-def main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val):
+def save_stats(dest, train_list, val_list):
+    len_train = len(train_list)
+    len_val = len(val_list)
+    i = 0
+    j = 0
+    with open(dest, "w") as file:
+        for i in range(0, len_train):
+            file.writelines(str(train_list[i]['cat']) + str(train_list[i]['num_labels']) + str(train_list[i]['num_images']))
+        for j in range(0, len(val)):
+            file.writelines(str(val_list[j]['cat']) + str(val_list[j]['num_labels']) + str(val_list[j]['num_images']))
+        #file.writelines(str(val_list['cat']) + str(val_list['num_labels'] + str(val_list['num_images'])) )
+    file.close()
+
+def main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train, val):
     src = src
     print("src: ", src)
     print("names: ", path_names)
@@ -482,9 +495,12 @@ def main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val):
     print("")
     print("Info-Validation: ", val_list)
     print("")
+    file_path = data_path + "/" + "stats.txt"
+    save_stats(file_path, train_list, val_list)
     print("Finished.")
 
 if __name__ == "__main__":
+    data_path = "/home/datafleet/darknet/Waste-Detection-Classification/data"
     path_names = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21"
     cat_dir = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/category-folder"
     src = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/input"
@@ -494,5 +510,5 @@ if __name__ == "__main__":
     trash = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/trash"
     train = "/home/datafleet/darknet/Waste-Detection-Classification/data/train"
     val = "/home/datafleet/darknet/Waste-Detection-Classification/data/val"
-    main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val)
+    main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train, val)
 
