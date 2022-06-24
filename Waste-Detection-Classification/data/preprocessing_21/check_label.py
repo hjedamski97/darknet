@@ -17,13 +17,14 @@ def split_dataset(cat_dir, train_dir, test_dir):
     folder_count = 0
 
     for folder in os.listdir(src):
+         print("FOLDER: ", str(folder))
          name_list = []
          test_names = []
          train_names = []
-         print(str(folder))
+         #print(str(folder))
          print("Splitting all .jpeg's")
          print("----------------------")
-         path = src + str(folder) + "/"
+         path = os.path.join(src, str(folder)) + "/"
          print("PFAD: ", path)
          try:
              for file in os.listdir(path):
@@ -46,18 +47,18 @@ def split_dataset(cat_dir, train_dir, test_dir):
                      #print(os.path.join(destination_path, image))
                      #print(os.path.cwd)
                      shutil.copy(path + image,
-                                 train_dir + image)
+                                 train_dir + "/" + image)
                      shutil.copy(path + txt,
-                                 train_dir + txt)
+                                 train_dir + "/" + txt)
 
                  for file in test_names:
                      image = file+'.jpeg'
                      txt = file+'.txt'
                      #print(os.path.join(destination_path, image))
                      shutil.copy(path + image,
-                                 test_dir + image)
+                                 test_dir + "/" + image)
                      shutil.copy(path + txt,
-                                 test_dir + txt)
+                                 test_dir + "/" + txt)
 
              elif len(name_list) > 0 and len(name_list) < 10:
                  test_names, train_names = train_test_split(name_list, test_size=0.5)
@@ -72,18 +73,18 @@ def split_dataset(cat_dir, train_dir, test_dir):
                      #print(os.path.join(destination_path, image))
                      #print(os.path.cwd)
                      shutil.copy(path + image,
-                                 train_dir + image)
+                                 train_dir + "/" + image)
                      shutil.copy(path + txt,
-                                 train_dir + txt)
+                                 train_dir + "/" + txt)
 
                  for file in test_names:
                      image = file+'.jpeg'
                      txt = file+'.txt'
                      #print(os.path.join(destination_path, image))
                      shutil.copy(path + image,
-                                 test_dir + image)
+                                 test_dir + "/" + image)
                      shutil.copy(path + txt,
-                                 test_dir + txt)
+                                 test_dir + "/" + txt)
              else:
                  print("Name-List is empty!")
 
@@ -111,18 +112,18 @@ def split_dataset(cat_dir, train_dir, test_dir):
                      #print(os.path.join(destination_path, image))
                      #print(os.path.cwd)
                      shutil.copy(path + image,
-                                 train_dir + image)
+                                 train_dir + "/" + image)
                      shutil.copy(path + txt,
-                                 train_dir + txt)
+                                 train_dir + "/" + txt)
 
                  for file in test_names:
                      image = file+'.jpg'
                      txt = file+'.txt'
                      #print(os.path.join(destination_path, image))
                      shutil.copy(path + image,
-                                 test_dir + image)
+                                 test_dir + "/" + image)
                      shutil.copy(path + txt,
-                                 test_dir + txt)
+                                 test_dir + "/" + txt)
              elif len(name_list) > 0 and len(name_list) < 10:
                  test_names, train_names = train_test_split(name_list, test_size=0.5)
 
@@ -137,25 +138,26 @@ def split_dataset(cat_dir, train_dir, test_dir):
                      #print(os.path.join(destination_path, image))
                      #print(os.path.cwd)
                      shutil.copy(path + image,
-                                 train_dir + image)
+                                 train_dir + "/" + image)
                      shutil.copy(path + txt,
-                                 train_dir + txt)
+                                 train_dir + "/" + txt)
 
                  for file in test_names:
                      image = file+'.jpg'
                      txt = file+'.txt'
                      #print(os.path.join(destination_path, image))
                      shutil.copy(path + image,
-                                 test_dir + image)
+                                 test_dir + "/" + image)
                      shutil.copy(path + txt,
-                                 test_dir + txt)
+                                 test_dir + "/" + txt)
              else:
                  print("Name-List is empty!")
 
          except FileNotFoundError as e:
              print("Alle Dateien durchsucht.")
 
-def init(path):
+def init(dir):
+    path = dir
     k = 0
     res_list = []
     counter = 0
@@ -167,19 +169,26 @@ def init(path):
             #print("")
             #Background-Klasse -> leere Datei
             if (row != "") and (row[k] != '\n'):
-                name = row.split(" ")
+                name = row.strip('\n')
+                #print(name)
             res_list.append({"idx": str(counter), "cat": name, "num_labels": 0, "num_images": 0})
             counter = counter + 1
     return res_list
 
 # Ineffizient, aber automatisierbar
-def category_info(dest, name_list):
+def category_info(dest_dir, init):
+    dest = dest_dir
     k = 0
-    res_list = name_list
+    idx = "0"
+    cat = ""
+    num_labels = 0
+    num_images = 0
+    res_list = init
     for elem in res_list:
         b_add_image = False
         idx = str(elem['idx'])
         cat = str(elem['cat'])
+        print(cat)
         num_labels = int(elem['num_labels'])
         num_images = int(elem['num_images'])
         for file in os.listdir(dest):
@@ -199,10 +208,10 @@ def category_info(dest, name_list):
 
                 if b_add_image == True:
                     num_images = num_images + 1
-                file.close()
+                #file.close()
                 b_add_image = False
         elem['idx'] = idx
-        elem['cat'] = cat
+        #elem['cat'] = cat
         elem['num_labels'] = num_labels
         elem['num_images'] = num_images
     return res_list
@@ -284,10 +293,35 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
                     cat, x, y, w, h = row.split(" ")
                     #h = h.rstrip("\n")
                     if (float(x) >= 0 and float(x) <= 1) and (float(y) >= 0 and float(y) <= 1) and (float(w) >= 0 and float(w) <= 1) and (float(h) >= 0 and float(h) <= 1):
-                        if (int(cat) >= 0) and (int(cat) <= (num_cat - 1)):
+                        print("Anzahl Kategorien: ", num_cat - 1)
+                        if (int(cat) >= 0) and (int(cat) <= (num_cat-1)):
+                            #if cat == "0":
+                                #cat_new = "5"
+                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                            #if cat == "1":
+                                #cat_new = "0"
+                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                            #if cat == "2":
+                                #cat_new = "1"
+                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                            #if cat == "3":
+                                #cat_new = "2"
+                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                            #if cat == "4":
+                                #cat_new = "3"
+                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                            #if cat == "5":
+                                #cat_new = "4"
+                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                            #if cat == "6":
+                                #cat_new = "5"
+                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                            #if cat == "7":
+                                #cat_new = "6"
+                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
                             line = str(cat) + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
                             str_list.append(line)
-                            print("str_list: ", str_list)
+                            #print("str_list: ", str_list)
                             res_list.append(str_list)
                         else:
                             print("Annotation correct")
@@ -302,7 +336,7 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
                         file.close()
                         return res_list
                 str_list = []
-            print("res: ", res_list)
+            #print("res: ", res_list)
             with open(dest, 'w') as file:
                 for row in res_list:
                     file.writelines(row)
@@ -406,14 +440,15 @@ def main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val):
             shutil.move(img_path, trash)
 
     print("Label-Check over.")
+    print("Init-List: ", init_list)
     print("Sorting images with each category into seperat folders..")
     print("")
 
-    print("3.get category-information..")
+    print("3.Get category-information..")
     print("------------------- ")
     info_list = []
     info_list = category_info(dest, init_list)
-
+    print("Category-Info: ", info_list)
     print("4.Sort Prio-List..")
     print("------------------- ")
     sorted_list = sort_list(info_list)
@@ -423,18 +458,30 @@ def main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val):
     print("------------------- ")
     fair_dataset(sorted_list)
 
-    print("6.Counting number of images in train & val folder..")
-    print("------------------- ")
-    train_list = []
-    val_list = []
-    train_list = category_info(train, init_list)
-    val_list = category_info(val, init_list)
-    print("Image-Info-Train: ", train_list)
-    print("Image-Info-Validation: ", val_list)
-    #print("Finished check_label & sorting into cat-folders!")
-    print("7.Split Data into Train & val..")
+    print("6.Split Data into Train & val..")
     print("------------------- ")
     split_dataset(cat_dir, train, val)
+    print("7.Counting number of images in train & val folder..")
+    print("------------------- ")
+
+    train_list = []
+    val_list = []
+    train_init = init(path_names)
+    val_init = init(path_names)
+    print("train-init:", train_init)
+    print("-------------------------------")
+    print("val-init:", val_init)
+
+    print("Train-Path: ", train)
+    train_list = category_info(train, train_init)
+    print("Val-Path: ", val)
+    val_list = category_info(val, val_init)
+    print("Info-Init: ", init_list)
+    print("")
+    print("Info-Train: ", train_list)
+    print("")
+    print("Info-Validation: ", val_list)
+    print("")
     print("Finished.")
 
 if __name__ == "__main__":

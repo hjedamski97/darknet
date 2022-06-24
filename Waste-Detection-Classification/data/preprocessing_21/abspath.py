@@ -1,6 +1,6 @@
 from os import listdir
 from os.path import isfile, join
-customPath = 'train/'
+customPath = '/home/datafleet/darknet/Waste-Detection-Classification/data/train/'
 #for f in listdir(customPath):
     #test=join(customPath,f)
     #print("Path:",test)
@@ -12,7 +12,7 @@ trainFile = customPath + "train.txt"
 file = open(trainFile, 'w')
 
 counter = 0
-customPath = '/home/stec102594/YOLO-Darknet/data/train/'
+customPath = '/home/datafleet/darknet/Waste-Detection-Classification/data/train/'
 for eachFile in onlyfiles:
     #print(eachFile)
     if "jpeg" in eachFile:
