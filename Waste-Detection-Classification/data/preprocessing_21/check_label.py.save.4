@@ -1,6 +1,5 @@
 import os
 import cv2
-from datetime import date
 import os.path
 from glob import glob
 from os.path import join
@@ -157,8 +156,7 @@ def split_dataset(cat_dir, train_dir, test_dir):
          except FileNotFoundError as e:
              print("Alle Dateien durchsucht.")
 
-def init(dir):
-    path = dir
+def init(path):
     k = 0
     res_list = []
     counter = 0
@@ -171,20 +169,15 @@ def init(dir):
             #Background-Klasse -> leere Datei
             if (row != "") and (row[k] != '\n'):
                 name = row.strip('\n')
-                #print(name)
+                print(name)
             res_list.append({"idx": str(counter), "cat": name, "num_labels": 0, "num_images": 0})
             counter = counter + 1
     return res_list
 
 # Ineffizient, aber automatisierbar
-def category_info(dest_dir, init):
-    dest = dest_dir
+def category_info(dest, init_list):
     k = 0
-    idx = "0"
-    cat = ""
-    num_labels = 0
-    num_images = 0
-    res_list = init
+    res_list = init_list
     for elem in res_list:
         b_add_image = False
         idx = str(elem['idx'])
@@ -294,35 +287,10 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
                     cat, x, y, w, h = row.split(" ")
                     #h = h.rstrip("\n")
                     if (float(x) >= 0 and float(x) <= 1) and (float(y) >= 0 and float(y) <= 1) and (float(w) >= 0 and float(w) <= 1) and (float(h) >= 0 and float(h) <= 1):
-                        print("Anzahl Kategorien: ", num_cat - 1)
-                        if (int(cat) >= 0) and (int(cat) <= (num_cat-1)):
-                            #if cat == "0":
-                                #cat_new = "5"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "1":
-                                #cat_new = "0"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "2":
-                                #cat_new = "1"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "3":
-                                #cat_new = "2"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "4":
-                                #cat_new = "3"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "5":
-                                #cat_new = "4"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "6":
-                                #cat_new = "5"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "7":
-                                #cat_new = "6"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                        if (int(cat) >= 0) and (int(cat) <= (num_cat - 1)):
                             line = str(cat) + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
                             str_list.append(line)
-                            #print("str_list: ", str_list)
+                            print("str_list: ", str_list)
                             res_list.append(str_list)
                         else:
                             print("Annotation correct")
@@ -337,7 +305,7 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
                         file.close()
                         return res_list
                 str_list = []
-            #print("res: ", res_list)
+            print("res: ", res_list)
             with open(dest, 'w') as file:
                 for row in res_list:
                     file.writelines(row)
@@ -345,39 +313,7 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
             print("")
             return res_list
 
-def save_stats(dest, full_list, train_list, val_list):
-    str_date = str(date.today())
-    len_full = len(full_list)
-    len_train = len(train_list)
-    len_val = len(val_list)
-    print("len-full: ", len_full)
-    print("len-train: ", len_train)
-    print("len_val: ", len_val)
-    i = 0
-    j = 0
-    k = 0
-    with open(dest, "a") as file:
-        file.writelines(str_date + "\n")
-        file.writelines("")
-        file.writelines("Full-Data-Stats: \n")
-        for i in range(0, len_full-1):
-            file.writelines(str(full_list[i]['cat']) + "\n" + "Num Annotations: " + str(full_list[i]['num_labels']) + "\n" + "Num Images: " + str(full_list[i]['num_images']) + "\n" )
-        file.writelines("\n")
-        file.writelines("")
-        file.writelines("Train-Data-Stats: \n")
-        for j in range(0, len_train-1):
-            file.writelines(str(train_list[j]['cat']) + "\n" + "Num Annotations: " + str(train_list[j]['num_labels']) + "\n" + "Num Images: " + str(train_list[j]['num_images']) + "\n" )
-        file.writelines("\n")
-        file.writelines("")
-        file.writelines("Val-Data-Stats: \n")
-        for k in range(0, len_val-1):
-            file.writelines(str(val_list[k]['cat']) + "\n" + "Num Annotations: " + str(val_list[k]['num_labels']) + "\n" + "Num Images: " + str(val_list[k]['num_images']) + "\n" )
-        file.writelines("\n")
-        file.writelines("")
-        #file.writelines(str(val_list['cat']) + str(val_list['num_labels'] + str(val_list['num_images'])) )
-    file.close()
-
-def main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train, val):
+def main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val):
     src = src
     print("src: ", src)
     print("names: ", path_names)
@@ -477,7 +413,7 @@ def main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train
     print("Sorting images with each category into seperat folders..")
     print("")
 
-    print("3.Get category-information..")
+    print("3.get category-information..")
     print("------------------- ")
     info_list = []
     info_list = category_info(dest, init_list)
@@ -491,36 +427,24 @@ def main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train
     print("------------------- ")
     fair_dataset(sorted_list)
 
-    print("6.Split Data into Train & val..")
+    print("6.Counting number of images in train & val folder..")
     print("------------------- ")
-    split_dataset(cat_dir, train, val)
-    print("7.Counting number of images in train & val folder..")
-    print("------------------- ")
-
     train_list = []
+    train_init = []
     val_list = []
-    train_init = init(path_names)
-    val_init = init(path_names)
-    print("train-init:", train_init)
-    print("-------------------------------")
-    print("val-init:", val_init)
-
-    print("Train-Path: ", train)
+    val_init = []
     train_list = category_info(train, train_init)
-    print("Val-Path: ", val)
+    print("Init-List:", train_init)
+    
     val_list = category_info(val, val_init)
-    print("Info-Init: ", init_list)
-    print("")
-    print("Info-Train: ", train_list)
-    print("")
-    print("Info-Validation: ", val_list)
-    print("")
-    file_path = data_path + "/" + "stats.txt"
-    save_stats(file_path, init_list, train_list, val_list)
-    print("Finished.")
+    print("Image-Info-Train: ", train_list)
+    print("Image-Info-Validation: ", val_list)
+    #print("7.Split Data into Train & val..")
+    #print("------------------- ")
+    #split_dataset(cat_dir, train, val)
+    #print("Finished.")
 
 if __name__ == "__main__":
-    data_path = "/home/datafleet/darknet/Waste-Detection-Classification/data"
     path_names = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21"
     cat_dir = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/category-folder"
     src = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/input"
@@ -530,5 +454,5 @@ if __name__ == "__main__":
     trash = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/trash"
     train = "/home/datafleet/darknet/Waste-Detection-Classification/data/train"
     val = "/home/datafleet/darknet/Waste-Detection-Classification/data/val"
-    main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train, val)
+    main(cat_dir, path_names, src, dest, alone, invalid, trash, train, val)
 
