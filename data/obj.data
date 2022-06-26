@@ -1,0 +1,5 @@
+classes = 7
+train  = /home/datafleet/darknet/data/train/train.txt
+valid  = /home/datafleet/darknet/data/val/val.txt
+names = /home/datafleet/darknet/data/obj.names
+backup = /home/datafleet/darknet/data/backup

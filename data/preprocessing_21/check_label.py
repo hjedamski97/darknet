@@ -294,7 +294,7 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
                     cat, x, y, w, h = row.split(" ")
                     #h = h.rstrip("\n")
                     if (float(x) >= 0 and float(x) <= 1) and (float(y) >= 0 and float(y) <= 1) and (float(w) >= 0 and float(w) <= 1) and (float(h) >= 0 and float(h) <= 1):
-                        print("Anzahl Kategorien: ", num_cat - 1)
+                        #print("Anzahl Kategorien: ", num_cat - 1)
                         if (int(cat) >= 0) and (int(cat) <= (num_cat-1)):
                             #if cat == "0":
                                 #cat_new = "5"
@@ -377,7 +377,7 @@ def save_stats(dest, full_list, train_list, val_list):
         #file.writelines(str(val_list['cat']) + str(val_list['num_labels'] + str(val_list['num_images'])) )
     file.close()
 
-def main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train, val):
+def main(cat_dir, path_names, stats_path, src, dest, alone, invalid, trash, train, val):
     src = src
     print("src: ", src)
     print("names: ", path_names)
@@ -520,15 +520,15 @@ def main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train
     print("Finished.")
 
 if __name__ == "__main__":
-    data_path = "/home/datafleet/darknet/Waste-Detection-Classification/data"
-    path_names = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21"
-    cat_dir = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/category-folder"
-    src = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/input"
-    dest = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/output"
-    alone = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/alone"
-    invalid = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/yolo_format_invalid"
-    trash = "/home/datafleet/darknet/Waste-Detection-Classification/data/preprocessing_21/trash"
-    train = "/home/datafleet/darknet/Waste-Detection-Classification/data/train"
-    val = "/home/datafleet/darknet/Waste-Detection-Classification/data/val"
-    main(cat_dir, path_names, data_path, src, dest, alone, invalid, trash, train, val)
+    stats_path = "/home/datafleet/darknet/data/preprocessing_21"
+    path_names = "/home/datafleet/darknet/data/preprocessing_21"
+    cat_dir = "/home/datafleet/darknet/data/preprocessing_21/category-folder"
+    src = "/home/datafleet/darknet/data/preprocessing_21/input"
+    dest = "/home/datafleet/darknet/data/preprocessing_21/output"
+    alone = "/home/datafleet/darknet/data/preprocessing_21/alone"
+    invalid = "/home/datafleet/darknet/data/preprocessing_21/yolo_format_invalid"
+    trash = "/home/datafleet/darknet/preprocessing_21/trash"
+    train = "/home/datafleet/darknet/preprocessing_21/train"
+    val = "/home/datafleet/darknet/data/preprocessing_21/val"
+    main(cat_dir, path_names, stats_path, src, dest, alone, invalid, trash, train, val)
 

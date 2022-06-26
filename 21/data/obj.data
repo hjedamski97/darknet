@@ -1,5 +1,0 @@
-classes = 9
-train  = /home/datafleet/21/YOLO-Darknet/data/train/train.txt
-valid  = /home/datafleet/21/YOLO-Darknet/data/val/val.txt
-names = /home/datafleet/21/YOLO-Darknet/data/obj.names
-backup = /home/datafleet/Waste-Detection-Classification/21/YOLO-Darknet/data/backup

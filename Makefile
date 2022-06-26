@@ -18,7 +18,7 @@ USE_CPP=0
 DEBUG=1
 
 ARCH= -gencode arch=compute_35,code=sm_35 \
-      -gencode arch=compute_30,code=sm_30 \
+      #-gencode arch=compute_30,code=sm_30 \
       -gencode arch=compute_60,code=sm_60 \
       -gencode arch=compute_80,code=[sm_80,compute_80] \
       -gencode arch=compute_70,code=[sm_70,compute_70] \

@@ -1,0 +1,5 @@
+classes = 7
+train  = /home/datafleet/darknet/data/preprocessing_21/train/train.txt
+valid  = /home/datafleet/darknet/data/preprocessing_21/val/val.txt
+names = /home/datafleet/darknet/data/preprocessing_21/obj.names
+backup = /home/datafleet/darknet/data/preprocessing_21/backup
