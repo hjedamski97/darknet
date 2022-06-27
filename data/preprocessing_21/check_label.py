@@ -195,7 +195,7 @@ def category_info(dest_dir, init):
         for file in os.listdir(dest):
             fn, fext = os.path.splitext(file)
             if (fext==".txt"):
-                with open(os.path.join(src, file), 'r') as file:
+                with open(os.path.join(dest, file), 'r') as file:
                     #print("File: ", file)
                     for row in file:
                         #print("row: ", row)
@@ -222,7 +222,7 @@ def sort_list(info_list):
     #print("Sortierte Liste: ", res)
     return res
 
-def fair_dataset(l):
+def fair_dataset(dest, cat_dir, l):
     sorted_list = l
     for element in sorted_list:
         temp_idx = str(element['idx'])
@@ -235,7 +235,7 @@ def fair_dataset(l):
             #print("----------------------------------")
             if fext == ".txt":
                 path_txt = os.path.join(dest, fn + fext)
-                b_cat = check_category(file, temp_idx)
+                b_cat = check_category(path_txt, file, temp_idx)
                 #print("b_cat: ", b_cat)
                 if b_cat == True:
                     # Directory
@@ -255,12 +255,12 @@ def fair_dataset(l):
                         print("Error: ", error)
         print("Next prio-level-category")
 
-def check_category(file, prio_idx):
+def check_category(path_txt, file, prio_idx):
     k = 0
     fn, fext = os.path.splitext(file)
     b_res = False
     if (fext==".txt"):
-        with open(os.path.join(src, file), 'r') as file:
+        with open(path_txt, 'r') as file:
             #print("File: ", file)
             for row in file:
                 #print("row: ", row)
@@ -489,7 +489,7 @@ def main(cat_dir, path_names, stats_path, src, dest, alone, invalid, trash, trai
 
     print("5.Building Dataset with fair distribution..")
     print("------------------- ")
-    fair_dataset(sorted_list)
+    fair_dataset(dest, cat_dir, sorted_list)
 
     print("6.Split Data into Train & val..")
     print("------------------- ")

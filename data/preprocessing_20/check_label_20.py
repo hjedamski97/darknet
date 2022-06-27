@@ -195,18 +195,18 @@ def category_info(dest_dir, init):
         for file in os.listdir(dest):
             fn, fext = os.path.splitext(file)
             if (fext==".txt"):
-                with open(os.path.join(src, file), 'r') as file:
+                with open(os.path.join(dest, file), 'r') as file:
                     #print("File: ", file)
                     for row in file:
                         #print("row: ", row)
                         #print("")
                         #Background-Klasse -> leere Datei
-                        if (row != "") and (row[k] != '\n'):
-                            cat, x, y, w, h = row.split(" ")
-                            if cat == idx:
-                                num_labels = num_labels + 1
-                                b_add_image = True
-
+                        #if (row != "") and (row[k] != '\n'):
+                        cat, x, y, w, h = row.split(" ")
+                        if cat == idx or row == "":
+                            num_labels = num_labels + 1
+                            b_add_image = True
+                #file.close()
                 if b_add_image == True:
                     num_images = num_images + 1
                 #file.close()
@@ -222,7 +222,7 @@ def sort_list(info_list):
     #print("Sortierte Liste: ", res)
     return res
 
-def fair_dataset(l):
+def fair_dataset(dest, cat_dir, l):
     sorted_list = l
     for element in sorted_list:
         temp_idx = str(element['idx'])
@@ -235,7 +235,7 @@ def fair_dataset(l):
             #print("----------------------------------")
             if fext == ".txt":
                 path_txt = os.path.join(dest, fn + fext)
-                b_cat = check_category(file, temp_idx)
+                b_cat = check_category(path_txt, file, temp_idx)
                 #print("b_cat: ", b_cat)
                 if b_cat == True:
                     # Directory
@@ -255,12 +255,12 @@ def fair_dataset(l):
                         print("Error: ", error)
         print("Next prio-level-category")
 
-def check_category(file, prio_idx):
+def check_category(path_txt, file, prio_idx):
     k = 0
     fn, fext = os.path.splitext(file)
     b_res = False
     if (fext==".txt"):
-        with open(os.path.join(src, file), 'r') as file:
+        with open(path_txt, 'r') as file:
             #print("File: ", file)
             for row in file:
                 #print("row: ", row)
@@ -269,6 +269,8 @@ def check_category(file, prio_idx):
                 if (row != "") and (row[k] != '\n'):
                     cat, x, y, w, h = row.split(" ")
                     if (cat == prio_idx):
+                        b_res = True
+                    if cat == "":
                         b_res = True
     return b_res
 
@@ -295,39 +297,11 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
                     #h = h.rstrip("\n")
                     if (float(x) >= 0 and float(x) <= 1) and (float(y) >= 0 and float(y) <= 1) and (float(w) >= 0 and float(w) <= 1) and (float(h) >= 0 and float(h) <= 1):
                         #print("Anzahl Kategorien: ", num_cat - 1)
-                        if (int(cat) >= 0) and (int(cat) <= (num_cat-1)):
-                            #if cat == "0":
-                                #cat_new = "5"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "1":
-                                #cat_new = "0"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "2":
-                                #cat_new = "1"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "3":
-                                #cat_new = "2"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "4":
-                                #cat_new = "3"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "5":
-                                #cat_new = "4"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "6":
-                                #cat_new = "5"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            #if cat == "7":
-                                #cat_new = "6"
-                                #line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            line = str(cat) + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
-                            str_list.append(line)
-                            #print("str_list: ", str_list)
-                            res_list.append(str_list)
-                        elif cat == "waste":
+                        if cat == "waste":
                             print("old annotation -> updating annotation-file..")
-                            cat_new = "1"
-                            line = cat_new + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
+                            cat = 1
+                        if (int(cat) >= 0) and (int(cat) <= (num_cat-1)):
+                            line = str(cat) + " " + str(x) + " " + str(y) + " " + str(w) + " " + str(h)
                             str_list.append(line)
                             #print("str_list: ", str_list)
                             res_list.append(str_list)
@@ -339,7 +313,7 @@ def readFile(f, src, txt_path_old, img_path_old, dest, invalid, num_cat):
                         shutil.move(txt_path_old, invalid)
                 else:
                     print("Background Label")
-                    print()
+                    print("")
                     with open(dest, 'w') as file:
                         file.writelines("")
                         file.close()
@@ -478,6 +452,7 @@ def main(cat_dir, path_names, stats_path, src, dest, alone, invalid, trash, trai
 
         else:
             print("Invalid File-Extension.. Move to trash")
+            img_path = os.path.join(src, fn + fext)
             shutil.move(img_path, trash)
 
     print("Label-Check over.")
@@ -497,7 +472,7 @@ def main(cat_dir, path_names, stats_path, src, dest, alone, invalid, trash, trai
 
     print("5.Building Dataset with fair distribution..")
     print("------------------- ")
-    fair_dataset(sorted_list)
+    fair_dataset(dest, cat_dir, sorted_list)
 
     print("6.Split Data into Train & val..")
     print("------------------- ")
@@ -523,7 +498,7 @@ def main(cat_dir, path_names, stats_path, src, dest, alone, invalid, trash, trai
     print("")
     print("Info-Validation: ", val_list)
     print("")
-    file_path = data_path + "/" + "stats.txt"
+    file_path = stats_path + "/" + "stats_20.txt"
     save_stats(file_path, init_list, train_list, val_list)
     print("Finished.")
 
